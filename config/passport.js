@@ -1,9 +1,7 @@
 var passport = require('passport');
 var User = require('../models/user');
-const MailSender = require('../mail')
-
 var LocalStrategy = require('passport-local').Strategy;
-
+const MailSender = require('../mail')
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
@@ -16,15 +14,6 @@ passport.deserializeUser(function (id, done) {
     });
 
 });
-
-// function validateEmail(email) {
-//     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-//     if (re.test(email)) {
-//         if (email.indexOf("@somaiya.edu", email.length - "@somaiya.edu".length) !== -1) {
-//             return 1
-//         }
-//     }
-// }
 
 function validatePassword(password) {
     var p = password
@@ -72,10 +61,7 @@ passport.use('local-register', new LocalStrategy({
             });
             return done(null, false, req.flash('error', messages));
         }
-        // else if (!validateEmail(email)) {
-        //     messages.push("Email Domain: @somaiya.edu required")
-        //     return done(null, false, req.flash('error', messages));
-        // }
+
         else if ((validatePassword(password)).length != 0) {
             messages = validatePassword(password)
             return done(null, false, req.flash('error', messages));
@@ -140,9 +126,6 @@ passport.use('local-register', new LocalStrategy({
                                     return done(null, newUser);
                                 });
                             }
-
-
-
                         });
                     }
                 })
@@ -184,16 +167,10 @@ passport.use('local-register', new LocalStrategy({
                             return done(null, newUser);
                         });
                     }
-
-
-
                 });
             }
-
         }
-
     }));
-
 
 passport.use('local-login', new LocalStrategy({
     usernameField: 'email',
@@ -201,7 +178,6 @@ passport.use('local-login', new LocalStrategy({
     passReqToCallback: true
 },
     function (req, email, password, done) {
-
         //Validation Errors
         req.checkBody('email', 'Invalid Email').notEmpty().isEmail();
         req.checkBody('password', 'Invalid password').notEmpty();
@@ -213,7 +189,6 @@ passport.use('local-login', new LocalStrategy({
             });
             return done(null, false, req.flash('error', messages));
         }
-
         //Find user by email
         User.findOne({ 'email': email }, function (err, user) {
             if (err) {
@@ -226,10 +201,6 @@ passport.use('local-login', new LocalStrategy({
             if (!user.validPassword(password)) {
                 return done(null, false, { message: 'Invalid Password' });
             }
-
             return done(null, user);
-
         });
-
     }));
-

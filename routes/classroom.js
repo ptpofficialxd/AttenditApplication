@@ -29,7 +29,7 @@ function calc(id) {
 }
 
 //Get classrooms of a student
-router.get('/userClasses', isLoggedIn, function (req, res, next) {
+router.get('/userClasses', isLoggedIn, function getStudentClasses (req, res, next) {
     errorMsg = ""
     successMsg = ""
     if (req.session.errorMsg || req.session.successMsg) {
@@ -73,7 +73,7 @@ router.get('/userClasses', isLoggedIn, function (req, res, next) {
 });
 
 /*Get defaulter classes for a student*/
-router.get('/defaulterClasses', isLoggedIn, function (req, res, next) {
+router.get('/defaulterClasses', isLoggedIn, function getDefaulterClasses (req, res, next) {
     calc(req.user.id)
     defaultersList = [];
     if (req.user.who == "1") {
@@ -98,7 +98,7 @@ router.get('/defaulterClasses', isLoggedIn, function (req, res, next) {
 });
 
 //Get classrooms of a teacher
-router.get('/teacher-classrooms', isLoggedIn, function (req, res, next) {
+router.get('/teacher-classrooms', isLoggedIn, function getTeacherClasses (req, res, next) {
     calc(req.user.id);
     var obj = api.forTeacherClasses(req.user._id)
 
@@ -135,7 +135,7 @@ router.get('/teacher-classrooms', isLoggedIn, function (req, res, next) {
 });
 
 //Get classroom details
-router.get('/class-details/:id', isLoggedIn, function (req, res, next) {
+router.get('/class-details/:id', isLoggedIn, function getClassroomDetails (req, res, next) {
     errorMsg = ""
     if (req.session.errorMsg) {
         errorMsg = req.session.errorMsg
@@ -170,7 +170,7 @@ router.post('/class-details', function (req, res) {
 });
 
 //Take attendance of students in class
-router.get('/take_attendance/:id', function (req, res, next) {
+router.get('/take_attendance/:id', function takeAttendance (req, res, next) {
     var source = req.headers['user-agent']
     var ua = useragent.parse(source);
     var isMob = ua.isMobile
@@ -215,7 +215,7 @@ router.get('/take_attendance/:id', function (req, res, next) {
 });
 
 //Add new class
-router.get('/create-class', isLoggedIn, (req, res) => {
+router.get('/create-class', isLoggedIn, function createClassroom (req, res) {
     console.log(req.user);
     res.render('classroom/create-class');
 });
@@ -244,7 +244,7 @@ router.get('/:id/copyCode/:code', isLoggedIn, (req, res) => {
 });
 
 //student can join class with class code 
-router.post('/join-class', (req, res, next) => {
+router.post('/join-class', function joinClassCode (req, res, next) {
     if (req.session.errorMsg || req.session.successMsg) {
         req.session.errorMsg = undefined
         req.session.successMsg = undefined
@@ -283,7 +283,7 @@ router.post('/join-class', (req, res, next) => {
 });
 
 //Delete particular class
-router.get('/teacher-classroom/delete/:id', async (req, res, next) => {
+router.get('/teacher-classroom/delete/:id', async function deleteClassroom (req, res, next) {
     var classId = req.params.id;
     classModel.findByIdAndDelete(classId, function (err, deleted) {
         if (err) {
@@ -303,7 +303,8 @@ router.get('/teacher-classroom/delete/:id', async (req, res, next) => {
     });
 });
 
-router.post('/teacher-classroom/edit/:id', async (req, res, next) => {
+//Edit class information
+router.post('/teacher-classroom/edit/:id', async function editClassInfo (req, res, next) {
     var classId = req.params.id;
     console.log(req.body.colour)
     var newClass = {
@@ -316,7 +317,7 @@ router.post('/teacher-classroom/edit/:id', async (req, res, next) => {
 });
 
 //Add new student in particular class
-router.get('/class-details/:id/students/new', isLoggedIn, (req, res) => {
+router.get('/class-details/:id/students/new', isLoggedIn, function addStudentToClass (req, res) {
     req.session.classId = req.params.id
     userModel.find({ 'who': "1" }, function (err, users) {
         if (err) {
@@ -351,7 +352,8 @@ router.get('/class-details/:id/students/new', isLoggedIn, (req, res) => {
         }
     });
 });
-router.get('/class-details/:id/students/new/:stuId', (req, res, next) => {
+
+router.get('/class-details/:id/students/new/:stuId', function updateStudentToClass (req, res, next) {
     var students = req.params.stuId;
     classModel.findOneAndUpdate({ _id: req.params.id }, { $push: { students: students } }, { new: true }, function (err, updatedClass) {
         if (err) {
@@ -376,7 +378,6 @@ router.get('/class-details/:id/students/new/:stuId', (req, res, next) => {
         }
     });
 });
-
 
 router.get('/class-details/:id/students/addAll', (req, res, next) => {
     console.log(req.session.addStudents)
@@ -670,7 +671,7 @@ router.post('/addStuFilter', function (req, res, next) {
 })
 
 //Remove a student
-router.get('/class-details/:id/students/remove/:stuId', (req, res, next) => {
+router.get('/class-details/:id/students/remove/:stuId', function removeStudent (req, res, next) {
     var classId = req.params.id;
     var studentId = req.params.stuId;
 
@@ -679,8 +680,6 @@ router.get('/class-details/:id/students/remove/:stuId', (req, res, next) => {
     obj.then((ob) => {
         res.redirect('/classroom/class-details/' + req.params.id);
     })
-
-
 });
 
 

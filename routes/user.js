@@ -26,7 +26,7 @@ function calc(id) {
     totalStudents = count
   })
 }
-router.post('/editUserInfo', function (req, res, next) {
+router.post('/editUserInfo', function editStudentInfo (req, res, next) {
   var name = req.body.name
   var rollnumber = req.body.rollnumber
   var classs = req.body.class
@@ -78,7 +78,7 @@ router.post('/editUserInfo', function (req, res, next) {
   }
 })
 
-router.get('/deleteUser', function (req, res, next) {
+router.get('/deleteUser', function deleteStudentProfile (req, res, next) {
   var userID = req.user.id
   req.logout();
   var obj = api.removeAllStudent(userID)
@@ -88,10 +88,10 @@ router.get('/deleteUser', function (req, res, next) {
 })
 
 
-router.get('/absentFilter', isLoggedIn, function (req, res, next) {
+router.get('/absentFilter', isLoggedIn, function getAbsentFilter (req, res, next) {
   res.render('user/absentFilter');
 });
-router.post('/absentFilter', isLoggedIn, function (req, res, next) {
+router.post('/absentFilter', isLoggedIn, function postAbsentFilter (req, res, next) {
   var reqDate = req.body.date
   var message = ""
 
@@ -169,7 +169,7 @@ router.get('/absentees/filter/:name', isLoggedIn, function (req, res, next) {
 });
 
 var counterAb = 1;
-router.get('/downloadAbsent', isLoggedIn, function (req, res, next) {
+router.get('/downloadAbsent', isLoggedIn, function downloadAbsent (req, res, next) {
   var query = String(req.session.absentQuery)
   req.session.counterAb = counterAb
   var className = req.session.absenteeClassFilter
@@ -198,8 +198,9 @@ router.get('/downloadAbsent', isLoggedIn, function (req, res, next) {
 })
 
 var counter = 1;
+
 //Download attendance sheet of their students for a teacher
-router.get('/download-attendance', isLoggedIn, function (req, res, next) {
+router.get('/download-attendance', isLoggedIn, function downloadAttendance (req, res, next) {
   req.session.counter = counter
   var ownOb = api.getOwner(req.user._id)
   ownOb.then((owner) => {
@@ -232,10 +233,10 @@ router.get('/download-attendance', isLoggedIn, function (req, res, next) {
   })
 });
 
-router.get('/filter', isLoggedIn, function (req, res, next) {
+router.get('/filter', isLoggedIn, function getFilter (req, res, next) {
   res.render('user/filter');
 });
-router.post('/filter', isLoggedIn, function (req, res, next) {
+router.post('/filter', isLoggedIn, function postFilter (req, res, next) {
   var year = req.body.year
   var batch = req.body.batch
   var message = ""
@@ -288,7 +289,7 @@ router.post('/filter', isLoggedIn, function (req, res, next) {
 })
 
 //Get defaulter list
-router.get('/defaulterStudents', isLoggedIn, function (req, res, next) {
+router.get('/defaulterStudents', isLoggedIn, function defaulterStudent (req, res, next) {
   //console.log(req.user.who)
   var obj = api.forTeacherClasses(req.user._id)
 
@@ -377,7 +378,7 @@ router.get('/sendDefaulterMail/:name', function (req, res, next) {
 })
 
 //Get dashboard
-router.get('/dashboard', isLoggedIn, function (req, res, next) {
+router.get('/dashboard', isLoggedIn, function getDashboard (req, res, next) {
   //console.log(req.user.who)
   if (req.user.who == "1") {
     calc(req.user.id)
@@ -487,7 +488,7 @@ router.get('/dashboard', isLoggedIn, function (req, res, next) {
 
 
 //classTotAttendPer
-router.get('/classTotAttendPer', isLoggedIn, function (req, res, next) {
+router.get('/classTotAttendPer', isLoggedIn, function attendanceMonitor (req, res, next) {
   calc(req.user.id);
   var obj = api.forTeacherClasses(req.user._id)
   obj.then(classes => {
@@ -532,7 +533,7 @@ router.get('/topAttPerStuPerClass', isLoggedIn, function (req, res, next) {
 
 
 //Get student profile
-router.get('/profile', isLoggedIn, function (req, res, next) {
+router.get('/profile', isLoggedIn, function getProfile (req, res, next) {
   if (req.user.who == "1") {
     var success = req.query.success
     console.log(success)
@@ -563,11 +564,11 @@ router.get('/allStudents', (req, res, next) => {
         users: users.sort(api.dynamicSort("rollnumber")),
       });
     }
-  });
+  }); 
 });
 
 //Function for logging out 
-router.get('/logout', isLoggedIn, function (req, res, next) {
+router.get('/logout', isLoggedIn, function logOut (req, res, next) {
   req.logout();
   res.redirect('/');
 });
@@ -587,7 +588,7 @@ router.get('/upload', isLoggedIn, (req, res) => {
   res.render('user/upload', { messages: messages, hasErrors: messages.length > 0 });
 
 });
-router.post('/upload', upload.single('photo'), async function (req, res, next) {
+router.post('/upload', upload.single('photo'), async function uploadImage (req, res, next) {
   let data = await fs.readFileSync(path.join(__dirname + '../../public/assets/uploads/' + req.file.filename))
   let base64 = data.toString('base64');
   let image = new Buffer(base64, 'base64');
