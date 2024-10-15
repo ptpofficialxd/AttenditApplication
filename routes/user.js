@@ -198,6 +198,41 @@ router.get('/downloadAbsent', isLoggedIn, function downloadAbsent (req, res, nex
 })
 
 var counter = 1;
+//Download attendance sheet of their students for a teacher
+router.get('/download-attendance', isLoggedIn, function (req, res, next) {
+  req.session.counter = counter
+  var ownOb = api.getOwner(req.user._id)
+  ownOb.then((owner) => {
+    var obj = api.forTeacherClasses(req.user._id)
+    obj.then((classes) => {
+      ob = api.createXlAttSheet(classes, res, owner.name, req.session.counter)
+      ob.then(ab => {
+        if (ab) {
+          console.log("Attendance sheet downloaded");
+          let today = new Date().toDateString();
+          req.session.counter = req.session.counter + 1
+          var filePath = "./XLS_FILES/attendance_sheet/attendance_sheet - " + today + " - " + owner.name + "(" + req.session.counter + ")" + ".xlsx";
+          res.download(filePath, function (error) {
+            if (error) {
+              console.log("Error : ", error)
+            }
+          });
+        } else {
+          console.log("Attendance sheet downloaded");
+          let today = new Date().toDateString();
+          var filePath = "./XLS_FILES/attendance_sheet/attendance_sheet - " + today + " - " + owner.name + "(" + req.session.counter + ")" + ".xlsx";
+          res.download(filePath, function (error) {
+            if (error) {
+              console.log("Error : ", error)
+            }
+          });
+        }
+      });
+    });
+  })
+});
+
+var counter = 1;
 
 //Download attendance sheet of their students for a teacher
 router.get('/download-attendance', isLoggedIn, function downloadAttendance (req, res, next) {

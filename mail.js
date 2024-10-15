@@ -1,21 +1,26 @@
 class MailSender {
-  constructor(to, sub, msg) {
-      this.mailfrom = 'attenditapplication@hotmail.com'; // Your Hotmail email address
-      this.tomail = to;
-      this.sub = sub;
-      this.message = msg;
-      this.nodemailer = require('nodemailer');
-      this.hotmail = this.nodemailer.createTransport({
-          host: 'smtp.office365.com',
-          port: 587,
-          secure: false, // TLS requires secure: false
-          auth: {
-              user: 'attenditapplication@hotmail.com', // Your Hotmail email address
-              pass: 'attendit753951' // Your Hotmail password
-          }
-      });
-      console.log('MailSender instance created');
-  }
+    constructor(to, sub, msg) {
+        try {
+            this.mailfrom = 'attenditapplication@gmail.com'; // Your email address
+            this.tomail = to;
+            this.sub = sub;
+            this.message = msg;
+            this.nodemailer = require('nodemailer');
+            this.gmail = this.nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false, // TLS requires secure: false
+                auth: {
+                    user: 'attenditapplication@gmail.com', // Your email address
+                    pass: 'ajfsmkuavodpnecc' // Your password
+                }
+            });
+            console.log('MailSender instance created');
+        } catch (error) {
+            console.error('Error creating MailSender instance:', error);
+            throw new Error('Failed to create MailSender instance');
+        }
+    }
 
   send() {
       console.log("Sending mail");
@@ -26,7 +31,7 @@ class MailSender {
           html: this.message,
       };
 
-      this.hotmail.sendMail(mailOptions, function (error, info) {
+      this.gmail.sendMail(mailOptions, function (error, info) {
           if (error) {
               console.log("Error sending email:", error);
           } else {
